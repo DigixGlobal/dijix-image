@@ -1,6 +1,8 @@
-import canvas from '@hitchcott/isomorphic-canvas';
+import canvas from 'isomorphic-canvas';
 
-if (canvas.setImageProvider) {
+const isBrowser = !canvas.setImageProvider;
+
+if (!isBrowser) {
   canvas.setImageProvider(new canvas.FSImageProvider(process.env.PWD));
 }
 
@@ -18,6 +20,18 @@ const defaultConfig = {
 function calculateBase64Size(str) {
   const head = str.split(',')[0];
   return Math.round((str.length - head.length) * 0.75);
+}
+
+function formatFromExtension(ext) {
+  return ext === 'jpg' ? 'jpeg' : ext;
+}
+
+function getBase64Format(str) {
+  if (str.indexOf('data:') !== 0) { return false; }
+  const splitStr = str.split(';')[0];
+  const splitHeader = splitStr.split('/');
+  const ext = splitHeader[splitHeader.length - 1];
+  return ext;
 }
 
 export default class DijixImage {
@@ -39,7 +53,12 @@ export default class DijixImage {
     // TODO square...
     ctx.drawImage(image, 0, 0, width, height);
     return new Promise((resolve) => {
-      c.toDataURL(`image/${format}`, quality, (err, res) => resolve(res));
+      const params = [`image/${format}`, quality, (err, res) => resolve(res)];
+      if (isBrowser) {
+        resolve(c.toDataURL(params[0], params[1]));
+      } else {
+        c.toDataURL(...params);
+      }
     });
   }
   async generateThumbnails(image, thumbnailsConfig) {
@@ -62,7 +81,13 @@ export default class DijixImage {
     const config = { ...this.config, ...opts };
     // accepts base64, file location, buffer
     const image = await this.getImage(opts.src);
-    const format = image.mime;
+    // attempt to resolve format
+    const splitPath = typeof opts.src === 'string' && opts.src.indexOf('.') > -1 && opts.src.split('/');
+    const splitFileName = splitPath && splitPath[splitPath.length - 1].split('.');
+    const extension = splitFileName && splitFileName[splitFileName.length - 1];
+    const format = (image.mime && image.mime.split('/')[1]) || getBase64Format(opts.src) || formatFromExtension(extension);
+    if (format !== 'png' && format !== 'jpeg') { throw new Error(`Invalid format: ${format}`); }
+    // misc config
     const quality = config.quality;
     const width = image.width > config.maxWidth ? config.maxWidth : image.width;
     const height = image.height * (width / image.width);
@@ -78,10 +103,9 @@ export default class DijixImage {
     const src = await dijix.ipfs.put(converted);
     // get the size & other meta data
     const size = calculateBase64Size(converted);
-    const splitPath = typeof opts.src === 'string' && opts.src.indexOf('.') > -1 && opts.src.split('/');
     const fileName = opts.fileName || (splitPath && splitPath[splitPath.length - 1]) || undefined;
     const name = opts.name;
-    const mime = format;
+    const mime = `image/${format}`;
     const data = { height, width, src, size, mime };
     if (thumbnails) { data.thumbnails = thumbnails; }
     if (fileName) { data.fileName = fileName; }

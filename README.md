@@ -1,6 +1,6 @@
 # Dijix Image
 
-### Image Processing Plugin for Dijix
+### Isomorphic Image Processing Plugin for Dijix
 
 To use in node, make sure you install the deps before installing:
 
@@ -34,7 +34,7 @@ digix.registerTypes([
 
 // usage
 
-// accepts base64, buffer, file path
+// accepts base64 or file path
 dijix.create('image', { src, name, fileName, ...configOverrides });
 
 /*
