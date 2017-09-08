@@ -21,7 +21,10 @@ digix.registerTypes([
     watermark: () => // TODO
     thumbnails: { // optional thumbnail configs
       quality: 0.7, // default
-      32: { quality: 0.2, square: true },
+      32: {
+        quality: 0.2,
+        square: true // TODO
+      },
       64: { quality: 0.6 },
       256: true,
       512: true,
@@ -30,14 +33,14 @@ digix.registerTypes([
 ]);
 
 // usage
-// accepts base64, buffer, http URL?, file location
+
+// accepts base64, buffer, file path
 dijix.create('image', { src, name, fileName, ...configOverrides });
 
 /*
 name: 'An Adorable Kitten',
 fileName: 'kitten.jpg',
 mimeType: 'image/jpeg',
-exifData: { ... }, // optional field; exif data
 src: 'ipfs://<ipfs hash>',
 width: 2048,
 height: 1024,

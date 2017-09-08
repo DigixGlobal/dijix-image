@@ -1,22 +1,14 @@
 import canvas from '@hitchcott/isomorphic-canvas';
-import * as a from 'awaiting';
 
 if (canvas.setImageProvider) {
   canvas.setImageProvider(new canvas.FSImageProvider(process.env.PWD));
-} else {
-  // set up getImage
-  // getImage //
 }
 
 const defaultConfig = {
-  // format: 'auto',
-  // quality: 1,
   maxWidth: 2048,
-  // watermark: () => // TODO
   thumbnails: {
     format: 'jpeg',
     quality: 0.7, // default
-    // 32: { quality: 0.2, square: true },
     64: true,
     256: true,
     512: true,
