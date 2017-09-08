@@ -15,14 +15,14 @@ sudo apt-get install libcairo2-dev libjpeg8-dev libpango1.0-dev libgif-dev build
 // initialise
 digix.registerTypes([
   new DijixImage({
-    compression: 0.5,
+    quality: 0.5,
     maxWidth: 2000,
     format: 'jpeg', // or 'png' - leave blank to inherit
     watermark: () => // TODO
     thumbnails: { // optional thumbnail configs
-      compression: 0.7, // default
-      32: { compression: 0.2, square: true },
-      64: { compression: 0.6 },
+      quality: 0.7, // default
+      32: { quality: 0.2, square: true },
+      64: { quality: 0.6 },
       256: true,
       512: true,
     },
