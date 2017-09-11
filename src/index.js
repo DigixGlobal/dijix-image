@@ -6,7 +6,7 @@ if (!isBrowser) {
   canvas.setImageProvider(new canvas.FSImageProvider(process.env.PWD));
 }
 
-const defaultConfig = {
+export const defaultConfig = {
   maxWidth: 2048,
   thumbnails: {
     format: 'jpeg',
