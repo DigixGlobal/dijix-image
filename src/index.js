@@ -3,7 +3,7 @@ import canvas from 'isomorphic-canvas';
 const isBrowser = !canvas.setImageProvider;
 
 if (!isBrowser) {
-  canvas.setImageProvider(new canvas.FSImageProvider(process.env.PWD));
+  canvas.setImageProvider(new canvas.FSImageProvider(''));
 }
 
 export const defaultConfig = {
@@ -34,6 +34,10 @@ function getBase64Format(str) {
   return ext;
 }
 
+function base64ToBinary(str) {
+  return Buffer.from(str.split(',')[1], 'base64');
+}
+
 export default class DijixImage {
   constructor(config) {
     this.type = 'image';
@@ -41,7 +45,14 @@ export default class DijixImage {
   }
   getImage(data) {
     return new Promise((resolve, reject) => {
-      canvas.getImage(data, (err, res) => {
+      // if it's a string, prefix if [0] is not '/' or 'data:'
+      let parsedData = data;
+      if (typeof data === 'string') {
+        if (data[0] !== '/' && data.substr(0, 5) !== 'data:') {
+          parsedData = `${process.env.PWD}/${data}`;
+        }
+      }
+      canvas.getImage(parsedData, (err, res) => {
         if (err) { return reject(err); }
         return resolve(res);
       });
@@ -73,7 +84,7 @@ export default class DijixImage {
   }
   async uploadThumbnails(image, config, dijix) {
     const thumbs = await this.generateThumbnails(image, config);
-    const ipfsHashes = await dijix.ipfs.put(Object.values(thumbs));
+    const ipfsHashes = await dijix.ipfs.put(Object.values(thumbs).map(base64ToBinary));
     return Object.keys(thumbs).reduce((o, k, i) => ({ ...o, [k]: ipfsHashes[i] }), {});
   }
   async creationPipeline(opts, dijix) {
@@ -100,7 +111,7 @@ export default class DijixImage {
     // create & upload the thumbnails
     const thumbnails = await this.uploadThumbnails(watermarked, config.thumbnails, dijix);
     // upload the source file
-    const src = await dijix.ipfs.put(converted);
+    const src = await dijix.ipfs.put(base64ToBinary(converted));
     // get the size & other meta data
     const size = calculateBase64Size(converted);
     const fileName = opts.fileName || (splitPath && splitPath[splitPath.length - 1]) || undefined;
