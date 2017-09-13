@@ -1,6 +1,6 @@
 {
   "name": "dijix-image",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Image Plugin for Dijix",
   "main": "src/index.js",
   "files": ["src"],
