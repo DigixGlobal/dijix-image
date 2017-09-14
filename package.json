@@ -1,9 +1,12 @@
 {
   "name": "dijix-image",
-  "version": "0.0.3",
+  "version": "0.0.8",
   "description": "Image Plugin for Dijix",
   "main": "src/index.js",
-  "files": ["src"],
+  "files": [
+    "src",
+    ".babelrc"
+  ],
   "scripts": {
     "test": "npm run test:node && npm run test:browser",
     "test:node": "mocha --require babel-polyfill --compilers js:babel-register",
@@ -16,8 +19,6 @@
     "babel-core": "^6.26.0",
     "babel-loader": "^7.1.2",
     "babel-polyfill": "^6.26.0",
-    "babel-preset-env": "^1.5.1",
-    "babel-preset-stage-0": "^6.24.1",
     "babel-register": "^6.26.0",
     "eslint": "^3.19.0",
     "eslint-config-airbnb": "^15.0.1",
@@ -32,7 +33,9 @@
     "webpack-dev-server": "^2.7.1"
   },
   "dependencies": {
-    "canvas": "^1.6.6",
-    "isomorphic-canvas": "^0.1.1"
+    "@hitchcott/isomorphic-canvas": "0.0.10",
+    "babel-preset-env": "^1.6.0",
+    "babel-preset-stage-0": "^6.24.1",
+    "canvas": "^1.6.6"
   }
 }

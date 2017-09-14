@@ -1,4 +1,4 @@
-import canvas from 'isomorphic-canvas';
+import canvas from '@hitchcott/isomorphic-canvas';
 
 const isBrowser = !canvas.setImageProvider;
 
